@@ -1,0 +1,56 @@
+
+services:
+  traefik:
+    image: "traefik:v3.1"
+    restart: always
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:5080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=PathPrefix(`/dashboard`) || PathPrefix(`/api`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=web"
+    ports:
+      - "5080:5080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  
+  whoami:
+    image: containous/whoami
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+
+  router:
+    image: "crossbario/crossbar"
+    volumes:
+      - ./router/config.json:/node/.crossbar/config.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.router.rule=PathPrefix(`/ws`)"
+      - "traefik.http.routers.router.entrypoints=web"
+
+  backend:
+    depends_on:
+      - router
+    build:
+      context: backend
+      dockerfile: Dockerfile
+      no_cache: true
+
+  frontend:
+    depends_on:
+      - router
+      - backend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      no_cache: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"

@@ -1,0 +1,11 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@types/autobahn": "^20.9.4",
+    "autobahn": "^22.11.1"
+  }
+}
