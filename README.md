@@ -13,6 +13,7 @@ docker compose up --build
 [http://localhost:5080](http://localhost:5080)
 
 
-### Key code snippets
+### Key code examples
 
-[backend](backend/index.js)
+- [backend](backend/index.js)
+- [frontend](frontend/src/components/Wamp.vue)
