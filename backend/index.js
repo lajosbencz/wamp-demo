@@ -44,7 +44,10 @@ async function publishCount() {
 }
 
 await publishCount()
-session.register('count', rpcCount)
+await session.register('count', rpcCount, {
+    invoke: 'roundrobin',
+    acknowledge: true,
+})
 
 process.on('SIGINT', () => {
     console.log('SIGINT received')
